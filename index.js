@@ -20,7 +20,7 @@ const {
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-app.use(cors({origin: true}));
+app.use(cors());
 app.use(express.json());
 
 app.get("/",  (req, res) => res.status(200).send("Welcome to bit market"));
