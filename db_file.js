@@ -1,14 +1,15 @@
 const { v4 } = require("uuid");
 let users = [];
 let cart = {};
-// let orders = {
-//     "kjjkj": {
-//         orderItems: [],
-//         price : "",
-//         orderId: "",
-//         createdAt: ""
-//     }
-// };
+
+const filterResponse = (data) => {
+    let response = {};
+    for (const [key, value] of Object.entries(data)) {
+        if (key !== "password") response[key] = value;
+    }
+
+    return response;
+}
 
 const registerUser = (newUser) => {
     let response = {
@@ -60,7 +61,7 @@ const getUserData = ({id}) => {
     let response = {
         status: "ok",
         messsage: "user data retrieved successfully",
-        payload: userData
+        payload: filterResponse(userData)
     }
     return response;
 }
@@ -85,7 +86,7 @@ const logUserIn = ({email, password}) => {
         let response = {
             status: "ok",
             messsage: "Logged In successfully",
-            payload: userData
+            payload: filterResponse(userData)
         }
 
         return response;
@@ -104,13 +105,13 @@ const modifyUserDetails = ({id, userData}) => {
         return {
             status: "ok",
             message: "Field updated successfully",
-            payload: users[index]
+            payload: filterResponse(users[index])
         }
     } catch (error) {
         return {
             status: "error",
             message: "Error in updating the field",
-            payload: users[index]
+            payload: filterResponse(users[index])
         }
     }
 }
@@ -183,7 +184,7 @@ const removeUserAddress = ({userId, addressId}) => {
           let response = {
               status: "ok",
               message: "Address removed successfully",
-              payload: users[idx]
+              payload: filterResponse(users[idx])
           }
           console.log(response);
           return response;
@@ -363,6 +364,39 @@ const placeOrder = ({userId, cartItems, price}) => {
     }
 }
 
+const changeUserPassword = ({userId, passwd, newPasswd, confirmNewPasswd}) => {
+    try {
+        let response = {
+            status: "",
+            message: "",
+            payload: {}
+        };
+        let index = 0;
+        users.forEach((user, idx) => {
+            if (user.id === userId) index = idx;
+        });
+
+        if (users[index]?.password !== passwd) {
+            response.status="error";
+            response.message="Current Password is Invalid";
+        } else if (confirmNewPasswd !== newPasswd) {
+            response.status="error";
+            response.message="New Passwords do not match";  
+        } else  {
+            users[index].password = newPasswd;
+            response.status = "ok";
+            response.message = "Password Changed Successfully";
+        }
+        return response;
+    } catch (error) {
+        return {
+            status: "error",
+            message: "Cannot Change User Password! Try again.",
+            payload: error.message
+        }
+    }
+}
+
 module.exports = {
     registerUser,
     logUserIn,
@@ -376,5 +410,6 @@ module.exports = {
     removeItemFromCart,
     changeItemCount,
     emptyCart,
-    editUserAddress
+    editUserAddress,
+    changeUserPassword
 };

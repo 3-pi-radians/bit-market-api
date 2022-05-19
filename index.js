@@ -15,7 +15,8 @@ const {
     changeItemCount,
     emptyCart,
     modifyUserDetails,
-    editUserAddress
+    editUserAddress,
+    changeUserPassword
 } = require("./db_file");
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -74,6 +75,13 @@ app.post("/user/edit-user-address", (req, res) => {
     const result = editUserAddress({id, address});
     res.send(result);
 });
+
+app.put("/user/modify-password", (req, res) => {
+    const {userId, passwd, newPasswd, confirmNewPasswd} = req.body;
+    const result = changeUserPassword({userId, passwd, newPasswd, confirmNewPasswd});
+    res.send(result);
+});
+
 app.post("/user/cart/add-item", (req, res) => {
     const {userId, item} = req.body;
     const result = addItemToCart({userId, item});
